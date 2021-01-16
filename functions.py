@@ -260,7 +260,7 @@ def squelette_amincissement_homothopique(img):
     #la boucle "do...while(condition)" n'existe pas en Python
     #on utilise alors la syntaxe suivante: while True ... if(condition): break
     while True:
-        amincissement_img(img_squelette_amincissement_homothopique_post, element_structurant)
+        img_squelette_amincissement_homothopique_post = amincissement_img(img_squelette_amincissement_homothopique_post, element_structurant)
 
         #vérifier l'idempotance
         if (img_squelette_amincissement_homothopique_pre == img_squelette_amincissement_homothopique_post).all():
