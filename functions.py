@@ -22,22 +22,24 @@ def addition_2_images(img1, img2, is_binaire=True):
     x_max = len(img1)
     y_max = len(img2)
     img_apres_addition = np.zeros((x_max, y_max), dtype=int)
-    for i in range(0, x_max):
-        for j in range(0, y_max):
-            valeur_pixel = img1[i][j] + img2[i][j]
-            # si l'image n'est pas binaire
-            if not is_binaire:
-                if valeur_pixel > 255:
-                    img_apres_addition[i][j] = 255
-                else:
-                    img_apres_addition[i][j] = valeur_pixel
-            # si l'image est binaire
-            else:
+
+    if is_binaire:
+        for i in range(0, x_max):
+            for j in range(0, y_max):
+                valeur_pixel = img1[i][j] + img2[i][j]
                 if valeur_pixel > 1:
                     img_apres_addition[i][j] = 1
                 else:
                     img_apres_addition[i][j] = valeur_pixel
 
+    else:
+        for i in range(0, x_max):
+            for j in range(0, y_max):
+                valeur_pixel = img1[i][j] + img2[i][j]
+                if valeur_pixel > 255:
+                    img_apres_addition[i][j] = 255
+                else:
+                    img_apres_addition[i][j] = valeur_pixel
     return img_apres_addition
 
 
@@ -67,11 +69,8 @@ L'érosion et la dilatation se font avec l'élément structurant par défaut (de
 def erosion_image_binaire(img, taille_element_structurant = 1):
     x_max = len(img)
     y_max = len(img[0])
-    img_apres_erosion = np.zeros((x_max, y_max), dtype=int)
     # copier l'image dans une variable locale
-    for i in range(0, x_max):
-        for j in range(0, y_max):
-            img_apres_erosion[i][j] = img[i][j]
+    img_apres_erosion = np.array(img, dtype=int)
 
     if taille_element_structurant == 0:
         return img_apres_erosion
@@ -94,12 +93,8 @@ def erosion_image_binaire(img, taille_element_structurant = 1):
 def dilatation_image_binaire(img, taille_element_structurant=1):
     x_max = len(img)
     y_max = len(img[0])
-    img_apres_dilatation = np.zeros((x_max, y_max), dtype=int)
-
     # copier l'image dans une variable locale
-    for i in range(0, x_max):
-        for j in range(0, y_max):
-            img_apres_dilatation[i][j] = img[i][j]
+    img_apres_dilatation = np.array(img, dtype=int)
 
     if taille_element_structurant == 0:
         return img_apres_dilatation
@@ -241,9 +236,10 @@ def squelette_lantuejoul(img, iteration_lantejoul=20):
     y_max = len(img[0])
     img_squelette_lantuejoul = np.zeros((x_max, y_max), dtype=int)
 
-    for n in range(0, iteration_lantejoul):
+# formule simplifiée du théorème de Lantuejoul: on commence de 1
+    for n in range(1, iteration_lantejoul):
         img_erodee_rayon_n = erosion_image_binaire(img, n)
-        img_ouverte_img_erodee_rayon_n = ouverture_img(img)
+        img_ouverte_img_erodee_rayon_n = ouverture_img(img_erodee_rayon_n)
         img_diff = img_diff(img_erodee_rayon_n, img_ouverte_img_erodee_rayon_n)
         img_squelette_lantuejoul = addition_2_images(img_squelette_lantuejoul, img_diff)
 
@@ -251,4 +247,26 @@ def squelette_lantuejoul(img, iteration_lantejoul=20):
 
 
 def squelette_amincissement_homothopique(img):
-    return img
+
+    # copier l'image dans des variables locales
+    img_squelette_amincissement_homothopique_post = np.array(img, dtype=int)
+    img_squelette_amincissement_homothopique_pre = np.array(img, dtype=int)
+    #la valeur 2 correspond à une valeur quelconque
+    element_structurant = [[2, 0, 2],
+                           [1, 1, 0],
+                           [1, 1, 2]]
+
+    #calculer le squelette jusqu'à l'idempotance
+    #la boucle "do...while(condition)" n'existe pas en Python
+    #on utilise alors la syntaxe suivante: while True ... if(condition): break
+    while True:
+        amincissement_img(img_squelette_amincissement_homothopique_post, element_structurant)
+
+        #vérifier l'idempotance
+        if (img_squelette_amincissement_homothopique_pre == img_squelette_amincissement_homothopique_post).all():
+            break
+
+        #copie par valeur
+        img_squelette_amincissement_homothopique_pre = np.copy(img_squelette_amincissement_homothopique_post)
+
+    return img_squelette_amincissement_homothopique_post
