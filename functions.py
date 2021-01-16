@@ -1,9 +1,9 @@
-
 import numpy as np
 
 '''
 Remarque: toutes les fonctions n'acceptent que des images avec des niveaux de gris ou binaires
 '''
+
 
 def seuil_image(img, seuil):
     x_max = len(img)
@@ -31,7 +31,7 @@ def addition_2_images(img1, img2, is_binaire=True):
                     img_apres_addition[i][j] = 255
                 else:
                     img_apres_addition[i][j] = valeur_pixel
-            #si l'image est binaire
+            # si l'image est binaire
             else:
                 if valeur_pixel > 1:
                     img_apres_addition[i][j] = 1
@@ -40,7 +40,8 @@ def addition_2_images(img1, img2, is_binaire=True):
 
     return img_apres_addition
 
-#Remarque: on n'a pas besoin de spécifier si l'image est binaire ou en niveau de gris
+
+# Remarque: on n'a pas besoin de spécifier si l'image est binaire ou en niveau de gris
 def soustraction_2_images(img1, img2):
     x_max = len(img1)
     y_max = len(img1[0])
@@ -55,39 +56,66 @@ def soustraction_2_images(img1, img2):
     return img_apres_soustraction
 
 
-def erosion_image_binaire(img):
+'''
+L'érosion et la dilatation se font avec l'élément structurant par défaut (de taille 1)suivant:
+[[1 1 1]
+ [1 1 1]
+ [1 1 1]]
+'''
+
+
+def erosion_image_binaire(img, taille_element_structurant = 1):
     x_max = len(img)
     y_max = len(img[0])
     img_apres_erosion = np.zeros((x_max, y_max), dtype=int)
-    # parcourir l'image
-    for i in range(1, x_max-1):
-        for j in range(1, y_max-1):
-            s = 0
-            # element structurant
-            for ligne_elem_struct in range(-1, 2):
-                for col_elem_struct in range(-1, 2):
-                    s += img[i+ligne_elem_struct][j+col_elem_struct]
-            # l'image est initialisée à 0
-            if s == 9:
-                img_apres_erosion[i][j] = 1
+    # copier l'image dans une variable locale
+    for i in range(0, x_max):
+        for j in range(0, y_max):
+            img_apres_erosion[i][j] = img[i][j]
+
+    if taille_element_structurant == 0:
+        return img_apres_erosion
+
+    # parcourir l'image en prenant en compte la taille de l'élément structurant
+    for i in range(taille_element_structurant, x_max - taille_element_structurant):
+        for j in range(taille_element_structurant, y_max - taille_element_structurant):
+            #pour ne pas faire les calculs pour les pixels de valeur 0
+            if img[i][j] == 1:
+                s = 0
+                # element structurant
+                for ligne_elem_struct in range(-taille_element_structurant, taille_element_structurant + 1):
+                    for col_elem_struct in range(-taille_element_structurant, taille_element_structurant + 1):
+                        s += img[i + ligne_elem_struct][j + col_elem_struct]
+                if s != 9:
+                    img_apres_erosion[i][j] = 0
     return img_apres_erosion
 
 
-def dilatation_image_binaire(img):
+def dilatation_image_binaire(img, taille_element_structurant=1):
     x_max = len(img)
     y_max = len(img[0])
     img_apres_dilatation = np.zeros((x_max, y_max), dtype=int)
-    # parcourir l'image
-    for i in range(1, x_max-1):
-        for j in range(1, y_max-1):
-            s = 0
-            # element structurant
-            for ligne_elem_struct in range(-1, 2):
-                for col_elem_struct in range(-1, 2):
-                    s += img[i+ligne_elem_struct][j+col_elem_struct]
-            # l'image est initialisée à 0
-            if s > 0:
-                img_apres_dilatation[i][j] = 1
+
+    # copier l'image dans une variable locale
+    for i in range(0, x_max):
+        for j in range(0, y_max):
+            img_apres_dilatation[i][j] = img[i][j]
+
+    if taille_element_structurant == 0:
+        return img_apres_dilatation
+
+    # parcourir l'image en prenant en compte la taille de l'élément structurant
+    for i in range(taille_element_structurant, x_max - taille_element_structurant):
+        for j in range(taille_element_structurant, y_max - taille_element_structurant):
+            # pour ne pas faire les calculs pour les pixels de valeur 1
+            if img[i][j] == 0:
+                s = 0
+                # element structurant
+                for ligne_elem_struct in range(-taille_element_structurant, taille_element_structurant + 1):
+                    for col_elem_struct in range(-taille_element_structurant, taille_element_structurant + 1):
+                        s += img[i + ligne_elem_struct][j + col_elem_struct]
+                if s > 1:
+                    img_apres_dilatation[i][j] = 0
     return img_apres_dilatation
 
 
@@ -112,30 +140,32 @@ Example d'élément structant:
                            [2 1 2]
                            [0 1 0]]
 '''
+ELEMENT_STRUCTURANT_PAR_DEFAUT = [[1, 1, 1],
+                                  [1, 1, 1],
+                                  [1, 1, 1]]
 
-
-def amincissement_img(img, element_structurant):
+def amincissement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
     x_max = len(img)
     y_max = len(img[0])
     img_apres_amincissement = np.zeros((x_max, y_max), dtype=int)
     # parcourir l'image : appliquer l'amincissement et copier le bon résultat dans img_apres_amincissement
     for i in range(1, x_max - 1):
         for j in range(1, y_max - 1):
-            #on n'applique l'amincissement qu'aux pixels mis à 1
-            #car le but est de voir si on doit en mettre à 0
+            # on n'applique l'amincissement qu'aux pixels mis à 1
+            # car le but est de voir si on doit en mettre à 0
             if img[i][j] == 1:
                 # parcourir les pixels contenus dans l'élément structurant
                 nbr_pixels_identiques = 0
-                #break_boucle sert à arrêter la boucle lorsque la configuration n'est pas satisfaite
-                #on l'ajoute juste pour des raisons de performance
-                #break_boucle = False
+                # break_boucle sert à arrêter la boucle lorsque la configuration n'est pas satisfaite
+                # on l'ajoute juste pour des raisons de performance
+                # break_boucle = False
                 for ligne_elem_struct in range(-1, 2):
                     for col_elem_struct in range(-1, 2):
                         if element_structurant[ligne_elem_struct][col_elem_struct] == 2:
                             nbr_pixels_identiques += nbr_pixels_identiques
                         else:
-                            differance = img[i+ligne_elem_struct][j+col_elem_struct] \
-                                     - element_structurant[ligne_elem_struct][col_elem_struct]
+                            differance = img[i + ligne_elem_struct][j + col_elem_struct] \
+                                         - element_structurant[ligne_elem_struct][col_elem_struct]
                             if differance == 0:
                                 nbr_pixels_identiques += nbr_pixels_identiques
                                 '''
@@ -147,41 +177,41 @@ def amincissement_img(img, element_structurant):
                         if break_boucle:
                             break
                             '''
-                #vérifier si la configuration est satisfaite
+                # vérifier si la configuration est satisfaite
                 if nbr_pixels_identiques == 9:
                     img_apres_amincissement[i][j] = 0
                 else:
-                    #ici img[i][j] est égale à 1
+                    # ici img[i][j] est égale à 1
                     img_apres_amincissement[i][j] = img[i][j]
             else:
-                #img[i][j] est égale à 0
+                # img[i][j] est égale à 0
                 img_apres_amincissement[i][j] = img[i][j]
 
     return img_apres_amincissement
 
 
-def epaississement_img(img, element_structurant):
+def epaississement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
     x_max = len(img)
     y_max = len(img[0])
     img_apres_epaississement = np.zeros((x_max, y_max), dtype=int)
     # parcourir l'image : appliquer l'epaississement et copier le bon résultat dans img_apres_epaississement
     for i in range(1, x_max - 1):
         for j in range(1, y_max - 1):
-            #on n'applique l'amincissement qu'aux pixels mis à 0
-            #car le but est de voir si on doit en mettre à 1
+            # on n'applique l'amincissement qu'aux pixels mis à 0
+            # car le but est de voir si on doit en mettre à 1
             if img[i][j] == 0:
                 # parcourir les pixels contenus dans l'élément structurant
                 nbr_pixels_identiques = 0
-                #break_boucle sert à arrêter la boucle lorsque la configuration n'est pas satisfaite
-                #on l'ajoute juste pour des raisons de performance
-                #break_boucle = False
+                # break_boucle sert à arrêter la boucle lorsque la configuration n'est pas satisfaite
+                # on l'ajoute juste pour des raisons de performance
+                # break_boucle = False
                 for ligne_elem_struct in range(-1, 2):
                     for col_elem_struct in range(-1, 2):
                         if element_structurant[ligne_elem_struct][col_elem_struct] == 2:
                             nbr_pixels_identiques += nbr_pixels_identiques
                         else:
-                            differance = img[i+ligne_elem_struct][j+col_elem_struct] \
-                                     - element_structurant[ligne_elem_struct][col_elem_struct]
+                            differance = img[i + ligne_elem_struct][j + col_elem_struct] \
+                                         - element_structurant[ligne_elem_struct][col_elem_struct]
                             if differance == 0:
                                 nbr_pixels_identiques += nbr_pixels_identiques
                                 '''
@@ -193,16 +223,26 @@ def epaississement_img(img, element_structurant):
                         if break_boucle:
                             break
                             '''
-                #vérifier si la configuration est satisfaite
+                # vérifier si la configuration est satisfaite
                 if nbr_pixels_identiques == 9:
                     img_apres_epaississement[i][j] = 1
                 else:
-                    #ici img[i][j] est égale à 0
+                    # ici img[i][j] est égale à 0
                     img_apres_epaississement[i][j] = img[i][j]
             else:
-                #img[i][j] est égale à 1
+                # img[i][j] est égale à 1
                 img_apres_epaississement[i][j] = img[i][j]
 
     return img_apres_epaississement
 
 
+def squelette_lantuejoul(img):
+    x_max = len(img)
+    y_max = len(img[0])
+    img_squelette_lantuejoul = np.zeros((x_max, y_max), dtype=int)
+
+    return img
+
+
+def squelette_amincissement_homothopique(img):
+    return img
