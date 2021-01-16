@@ -246,11 +246,11 @@ def squelette_lantuejoul(img, iteration_lantejoul=20):
     return img_squelette_lantuejoul
 
 
-def squelette_amincissement_homothopique(img):
+def squelette_amincissement_homotopique(img):
 
     # copier l'image dans des variables locales
-    img_squelette_amincissement_homothopique_post = np.array(img, dtype=int)
-    img_squelette_amincissement_homothopique_pre = np.array(img, dtype=int)
+    img_squelette_amincissement_homotopique_post = np.array(img, dtype=int)
+    img_squelette_amincissement_homotopique_pre = np.array(img, dtype=int)
     #la valeur 2 correspond à une valeur quelconque
     element_structurant = [[2, 0, 2],
                            [1, 1, 0],
@@ -260,13 +260,13 @@ def squelette_amincissement_homothopique(img):
     #la boucle "do...while(condition)" n'existe pas en Python
     #on utilise alors la syntaxe suivante: while True ... if(condition): break
     while True:
-        img_squelette_amincissement_homothopique_post = amincissement_img(img_squelette_amincissement_homothopique_post, element_structurant)
+        img_squelette_amincissement_homotopique_post = amincissement_img(img_squelette_amincissement_homotopique_post, element_structurant)
 
         #vérifier l'idempotance
-        if (img_squelette_amincissement_homothopique_pre == img_squelette_amincissement_homothopique_post).all():
+        if (img_squelette_amincissement_homotopique_pre == img_squelette_amincissement_homotopique_post).all():
             break
 
         #copie par valeur
-        img_squelette_amincissement_homothopique_pre = np.copy(img_squelette_amincissement_homothopique_post)
+        img_squelette_amincissement_homotopique_pre = np.copy(img_squelette_amincissement_homotopique_post)
 
-    return img_squelette_amincissement_homothopique_post
+    return img_squelette_amincissement_homotopique_post
