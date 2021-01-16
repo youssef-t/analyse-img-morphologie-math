@@ -236,12 +236,18 @@ def epaississement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
     return img_apres_epaississement
 
 
-def squelette_lantuejoul(img):
+def squelette_lantuejoul(img, iteration_lantejoul=20):
     x_max = len(img)
     y_max = len(img[0])
     img_squelette_lantuejoul = np.zeros((x_max, y_max), dtype=int)
 
-    return img
+    for n in range(0, iteration_lantejoul):
+        img_erodee_rayon_n = erosion_image_binaire(img, n)
+        img_ouverte_img_erodee_rayon_n = ouverture_img(img)
+        img_diff = img_diff(img_erodee_rayon_n, img_ouverte_img_erodee_rayon_n)
+        img_squelette_lantuejoul = addition_2_images(img_squelette_lantuejoul, img_diff)
+
+    return img_squelette_lantuejoul
 
 
 def squelette_amincissement_homothopique(img):
