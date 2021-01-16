@@ -4,6 +4,7 @@ import numpy as np
 '''
 Remarque: toutes les fonctions n'acceptent que des images avec des niveaux de gris ou binaires
 '''
+
 def seuil_image(img, seuil):
     x_max = len(img)
     y_max = len(img[0])
@@ -117,6 +118,44 @@ def amincissement_img(img, element_structurant):
     x_max = len(img)
     y_max = len(img[0])
     img_apres_amincissement = np.zeros((x_max, y_max), dtype=int)
+    # parcourir l'image : appliquer l'amincissement et copier le bon résultat dans img_apres_amincissement
+    for i in range(1, x_max - 1):
+        for j in range(1, y_max - 1):
+            #on n'applique l'amincissement qu'aux pixels mis à 1
+            #car le but est de voir si on doit en mettre à 0
+            if img[i][j] == 1:
+                # parcourir les pixels contenus dans l'élément structurant
+                nbr_pixels_identiques = 0
+                #break_boucle sert à arrêter la boucle lorsque la configuration n'est pas satisfaite
+                #on l'ajoute juste pour des raisons de performance
+                #break_boucle = False
+                for ligne_elem_struct in range(-1, 2):
+                    for col_elem_struct in range(-1, 2):
+                        if element_structurant[ligne_elem_struct][col_elem_struct] == 2:
+                            nbr_pixels_identiques += nbr_pixels_identiques
+                        else:
+                            differance = img[i+ligne_elem_struct][j+col_elem_struct] \
+                                     - element_structurant[ligne_elem_struct][col_elem_struct]
+                            if differance == 0:
+                                nbr_pixels_identiques += nbr_pixels_identiques
+                                '''
+                            else:
+                                #sortir de la quatrième boucle
+                                break_boucle = True
+                                break
+                        #sortir de la troisième boucle
+                        if break_boucle:
+                            break
+                            '''
+                #vérifier si la configuration est satisfaite
+                if nbr_pixels_identiques == 9:
+                    img_apres_amincissement[i][j] = 0
+                else:
+                    #ici img[i][j] est égale à 1
+                    img_apres_amincissement[i][j] = img[i][j]
+            else:
+                #img[i][j] est égale à 0
+                img_apres_amincissement[i][j] = img[i][j]
 
     return img_apres_amincissement
 
@@ -125,6 +164,44 @@ def epaississement_img(img, element_structurant):
     x_max = len(img)
     y_max = len(img[0])
     img_apres_epaississement = np.zeros((x_max, y_max), dtype=int)
+    # parcourir l'image : appliquer l'epaississement et copier le bon résultat dans img_apres_epaississement
+    for i in range(1, x_max - 1):
+        for j in range(1, y_max - 1):
+            #on n'applique l'amincissement qu'aux pixels mis à 0
+            #car le but est de voir si on doit en mettre à 1
+            if img[i][j] == 0:
+                # parcourir les pixels contenus dans l'élément structurant
+                nbr_pixels_identiques = 0
+                #break_boucle sert à arrêter la boucle lorsque la configuration n'est pas satisfaite
+                #on l'ajoute juste pour des raisons de performance
+                #break_boucle = False
+                for ligne_elem_struct in range(-1, 2):
+                    for col_elem_struct in range(-1, 2):
+                        if element_structurant[ligne_elem_struct][col_elem_struct] == 2:
+                            nbr_pixels_identiques += nbr_pixels_identiques
+                        else:
+                            differance = img[i+ligne_elem_struct][j+col_elem_struct] \
+                                     - element_structurant[ligne_elem_struct][col_elem_struct]
+                            if differance == 0:
+                                nbr_pixels_identiques += nbr_pixels_identiques
+                                '''
+                            else:
+                                #sortir de la quatrième boucle
+                                break_boucle = True
+                                break
+                        #sortir de la troisième boucle
+                        if break_boucle:
+                            break
+                            '''
+                #vérifier si la configuration est satisfaite
+                if nbr_pixels_identiques == 9:
+                    img_apres_epaississement[i][j] = 1
+                else:
+                    #ici img[i][j] est égale à 0
+                    img_apres_epaississement[i][j] = img[i][j]
+            else:
+                #img[i][j] est égale à 1
+                img_apres_epaississement[i][j] = img[i][j]
 
     return img_apres_epaississement
 
