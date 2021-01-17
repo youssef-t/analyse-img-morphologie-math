@@ -26,7 +26,7 @@ def addition_2_images(img1, img2, is_binaire=True):
     if is_binaire:
         for i in range(0, x_max):
             for j in range(0, y_max):
-                valeur_pixel = img1[i][j] + img2[i][j]
+                valeur_pixel = int(img1[i][j]) + int(img2[i][j])
                 if valeur_pixel > 1:
                     img_apres_addition[i][j] = 1
                 else:
@@ -35,7 +35,7 @@ def addition_2_images(img1, img2, is_binaire=True):
     else:
         for i in range(0, x_max):
             for j in range(0, y_max):
-                valeur_pixel = img1[i][j] + img2[i][j]
+                valeur_pixel = int(img1[i][j]) + int(img2[i][j])
                 if valeur_pixel > 255:
                     img_apres_addition[i][j] = 255
                 else:
@@ -50,7 +50,7 @@ def soustraction_2_images(img1, img2):
     img_apres_soustraction = np.zeros((x_max, y_max), dtype=int)
     for i in range(0, x_max):
         for j in range(0, y_max):
-            valeur_pixel = img1[i][j] - img2[i][j]
+            valeur_pixel = int(img1[i][j]) - int(img2[i][j])
             if valeur_pixel < 0:
                 img_apres_soustraction[i][j] = 0
             else:
@@ -109,8 +109,8 @@ def dilatation_image_binaire(img, taille_element_structurant=1):
                 for ligne_elem_struct in range(-taille_element_structurant, taille_element_structurant + 1):
                     for col_elem_struct in range(-taille_element_structurant, taille_element_structurant + 1):
                         s += img[i + ligne_elem_struct][j + col_elem_struct]
-                if s > 1:
-                    img_apres_dilatation[i][j] = 0
+                if s > 0:
+                    img_apres_dilatation[i][j] = 1
     return img_apres_dilatation
 
 
@@ -156,13 +156,13 @@ def amincissement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
                 # break_boucle = False
                 for ligne_elem_struct in range(-1, 2):
                     for col_elem_struct in range(-1, 2):
-                        if element_structurant[ligne_elem_struct][col_elem_struct] == 2:
-                            nbr_pixels_identiques += nbr_pixels_identiques
+                        if element_structurant[ligne_elem_struct+1][col_elem_struct+1] == 2:
+                            nbr_pixels_identiques += 1
                         else:
                             differance = img[i + ligne_elem_struct][j + col_elem_struct] \
-                                         - element_structurant[ligne_elem_struct][col_elem_struct]
+                                         - element_structurant[ligne_elem_struct+1][col_elem_struct+1]
                             if differance == 0:
-                                nbr_pixels_identiques += nbr_pixels_identiques
+                                nbr_pixels_identiques += 1
                                 '''
                             else:
                                 #sortir de la quatrième boucle
@@ -184,7 +184,7 @@ def amincissement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
 
     return img_apres_amincissement
 
-
+# Remarque: avec l'élément structurant par défaut, aucune modification sera faite
 def epaississement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
     x_max = len(img)
     y_max = len(img[0])
@@ -202,13 +202,13 @@ def epaississement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
                 # break_boucle = False
                 for ligne_elem_struct in range(-1, 2):
                     for col_elem_struct in range(-1, 2):
-                        if element_structurant[ligne_elem_struct][col_elem_struct] == 2:
-                            nbr_pixels_identiques += nbr_pixels_identiques
+                        if element_structurant[ligne_elem_struct+1][col_elem_struct+1] == 2:
+                            nbr_pixels_identiques += 1
                         else:
                             differance = img[i + ligne_elem_struct][j + col_elem_struct] \
-                                         - element_structurant[ligne_elem_struct][col_elem_struct]
+                                         - element_structurant[ligne_elem_struct+1][col_elem_struct+1]
                             if differance == 0:
-                                nbr_pixels_identiques += nbr_pixels_identiques
+                                nbr_pixels_identiques += 1
                                 '''
                             else:
                                 #sortir de la quatrième boucle
@@ -231,7 +231,7 @@ def epaississement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
     return img_apres_epaississement
 
 
-def squelette_lantuejoul(img, iteration_lantejoul=20):
+def squelette_lantuejoul(img, iteration_lantejoul=100):
     x_max = len(img)
     y_max = len(img[0])
     img_squelette_lantuejoul = np.zeros((x_max, y_max), dtype=int)
@@ -240,7 +240,7 @@ def squelette_lantuejoul(img, iteration_lantejoul=20):
     for n in range(1, iteration_lantejoul):
         img_erodee_rayon_n = erosion_image_binaire(img, n)
         img_ouverte_img_erodee_rayon_n = ouverture_img(img_erodee_rayon_n)
-        img_diff = img_diff(img_erodee_rayon_n, img_ouverte_img_erodee_rayon_n)
+        img_diff = soustraction_2_images(img_erodee_rayon_n, img_ouverte_img_erodee_rayon_n)
         img_squelette_lantuejoul = addition_2_images(img_squelette_lantuejoul, img_diff)
 
     return img_squelette_lantuejoul
@@ -260,7 +260,8 @@ def squelette_amincissement_homotopique(img):
     #la boucle "do...while(condition)" n'existe pas en Python
     #on utilise alors la syntaxe suivante: while True ... if(condition): break
     while True:
-        img_squelette_amincissement_homotopique_post = amincissement_img(img_squelette_amincissement_homotopique_post, element_structurant)
+        img_squelette_amincissement_homotopique_post = amincissement_img(img_squelette_amincissement_homotopique_post,
+                                                                         element_structurant)
 
         #vérifier l'idempotance
         if (img_squelette_amincissement_homotopique_pre == img_squelette_amincissement_homotopique_post).all():
