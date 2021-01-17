@@ -27,18 +27,32 @@ plt.imshow(img_DC, cmap=plt.cm.gray)
 plt.show()
 print(img_DC)
 
+#image à additioner
+img_addition = np.zeros((len(img_apple_1), len(img_apple_1[0])), dtype=int)
+for i in range(len(img_apple_1)):
+    img_addition[i][10] = 1
+    img_addition[i][30] = 1
+    img_addition[i][31] = 1
+    img_addition[i][32] = 1
+    img_addition[i][33] = 1
+    
 #appeler les fonctions définies
-img_a_traiter = img_frog_3
-img_added = addition_2_images(img_apple_1, img_apple_3)
-img_soustraction = soustraction_2_images(img_apple_2, img_apple_3)
+img_apple_1 = seuil_image(img_apple_1, 100)
+img_frog_1 = seuil_image(img_frog_3, 100)
+img_a_traiter = img_frog_1
+img_added = addition_2_images(img_apple_1, img_addition)
+img_soustraction = soustraction_2_images(img_apple_1, img_addition)
+print(img_soustraction)
+print(f'img_soustraction[100][31]: {img_soustraction[100][31]}')
+print(f'img_apple_1[100][31]: {img_apple_1[100][31]}')
+print(f'img_addition[100][31]: {img_addition[100][31]}')
 img_erodee = erosion_image_binaire(img_a_traiter)
 img_dilatee = dilatation_image_binaire(img_a_traiter)
 img_ouverture = ouverture_img(img_a_traiter)
 img_fermeture = fermeture_img(img_a_traiter)
 img_amincissement = amincissement_img(img_a_traiter)
 img_epaississement = epaississement_img(img_a_traiter)
-img_squelette_lantuejoul = squelette_lantuejoul(img_a_traiter, 10)
-print(img_squelette_lantuejoul)
+img_squelette_lantuejoul = squelette_lantuejoul(img_a_traiter, 20)
 img_squelette_amincissement_homotopique = squelette_amincissement_homotopique(img_a_traiter)
 
 
