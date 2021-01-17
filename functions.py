@@ -91,6 +91,19 @@ def erosion_image_binaire(img, rayon_element_structurant=1):
                 #rayon n => (2*n +1)^2 éléments dans la matrice
                 if s != (2*rayon_element_structurant + 1)**2:
                     img_apres_erosion[i][j] = 0
+
+    #on met les pixels non parcourus à 0
+    #bords de l'image
+    for i in range(0, x_max):
+        for j in range(0, rayon_element_structurant):
+            img_apres_erosion[i][j] = 0
+            img_apres_erosion[i][y_max-j-1] = 0
+    for j in range(0, y_max):
+        for i in range(0, rayon_element_structurant):
+            img_apres_erosion[i][j] = 0
+            img_apres_erosion[x_max-i-1][j] = 0
+
+
     return img_apres_erosion
 
 
@@ -146,7 +159,7 @@ ELEMENT_STRUCTURANT_PAR_DEFAUT = [[1, 1, 1],
 def amincissement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
     x_max = len(img)
     y_max = len(img[0])
-    img_apres_amincissement = np.zeros((x_max, y_max), dtype=int)
+    img_apres_amincissement = np.array(img, dtype=int)
     # parcourir l'image : appliquer l'amincissement et copier le bon résultat dans img_apres_amincissement
     for i in range(1, x_max - 1):
         for j in range(1, y_max - 1):
@@ -179,12 +192,6 @@ def amincissement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
                 # vérifier si la configuration est satisfaite
                 if nbr_pixels_identiques == 9:
                     img_apres_amincissement[i][j] = 0
-                else:
-                    # ici img[i][j] est égale à 1
-                    img_apres_amincissement[i][j] = img[i][j]
-            else:
-                # img[i][j] est égale à 0
-                img_apres_amincissement[i][j] = img[i][j]
 
     return img_apres_amincissement
 
@@ -192,7 +199,7 @@ def amincissement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
 def epaississement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
     x_max = len(img)
     y_max = len(img[0])
-    img_apres_epaississement = np.zeros((x_max, y_max), dtype=int)
+    img_apres_epaississement = np.array(img, dtype=int)
     # parcourir l'image : appliquer l'epaississement et copier le bon résultat dans img_apres_epaississement
     for i in range(1, x_max - 1):
         for j in range(1, y_max - 1):
@@ -225,24 +232,21 @@ def epaississement_img(img, element_structurant=ELEMENT_STRUCTURANT_PAR_DEFAUT):
                 # vérifier si la configuration est satisfaite
                 if nbr_pixels_identiques == 9:
                     img_apres_epaississement[i][j] = 1
-                else:
-                    # ici img[i][j] est égale à 0
-                    img_apres_epaississement[i][j] = img[i][j]
-            else:
-                # img[i][j] est égale à 1
-                img_apres_epaississement[i][j] = img[i][j]
 
     return img_apres_epaississement
 
 
-def squelette_lantuejoul(img, iteration_lantejoul=80):
+def squelette_lantuejoul(img, iteration_lantejoul=30):
     x_max = len(img)
     y_max = len(img[0])
     img_squelette_lantuejoul = np.zeros((x_max, y_max), dtype=int)
 
+    img_full_zeros = np.zeros((x_max, y_max), dtype=int)
 # formule simplifiée du théorème de Lantuejoul: on commence de 1
-    for n in range(1, iteration_lantejoul):
+    for n in range(1, iteration_lantejoul+1):
         img_erodee_rayon_n = erosion_image_binaire(img, n)
+        if (img_erodee_rayon_n == img_full_zeros).all():
+            break
         img_ouverte_img_erodee_rayon_n = ouverture_img(img_erodee_rayon_n)
         print(f"LANTUEJOUL - boucle : {n}")
         img_diff = soustraction_2_images(img_erodee_rayon_n, img_ouverte_img_erodee_rayon_n)
@@ -269,14 +273,15 @@ def squelette_amincissement_homotopique(img):
         img_squelette_amincissement_homotopique_post = amincissement_img(img_squelette_amincissement_homotopique_post,
                                                                          element_structurant)
 
+        compteur += 1
+        print(f'Amincissement homotopique - boucle: {compteur}')
+
         #vérifier l'idempotance
         if (img_squelette_amincissement_homotopique_pre == img_squelette_amincissement_homotopique_post).all() or \
-                compteur > 1000:
+                compteur > 500:
             break
 
         #copie par valeur
         img_squelette_amincissement_homotopique_pre = np.copy(img_squelette_amincissement_homotopique_post)
-        compteur += 1
-        print(f'Amincissement homotopique - boucle: {compteur}')
 
     return img_squelette_amincissement_homotopique_post

@@ -2,24 +2,24 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 from functions import *
+
+'''
+    TO USE ONLY FOR TESTING "seuil"
+'''
 # chemin des images
 chemin_img_apple_1 = "./resources/apple-1.gif"
 chemin_img_apple_2 = "./resources/apple-2.gif"
 chemin_img_apple_3 = "./resources/apple-4.gif"
 chemin_img_DC = "./resources/Fig1204(WashingtonDC ).tif"
-chemin_img_frog_1 = "./resources/frog_binary1.gif"
-chemin_img_frog_2 = "./resources/frog_binary2.gif"
-chemin_img_frog_3 = "./resources/frog_binary3.gif"
+
 
 #charger les images
 img_apple_1 = mpimg.imread(chemin_img_apple_1)
 img_apple_2 = mpimg.imread(chemin_img_apple_2)
 img_apple_3 = mpimg.imread(chemin_img_apple_3)
 img_DC = mpimg.imread(chemin_img_DC)
-img_frog_1 = mpimg.imread(chemin_img_frog_1)
-img_frog_2 = mpimg.imread(chemin_img_frog_2)
-img_frog_3 = mpimg.imread(chemin_img_frog_3)
-print(img_frog_3.shape)
+
+print(img_DC.shape)
 #test du seuil
 img_DC = seuil_image(img_DC, 100)
 
@@ -38,8 +38,7 @@ for i in range(len(img_apple_1)):
     
 #appeler les fonctions définies
 img_apple_1 = seuil_image(img_apple_1, 100)
-img_frog_1 = seuil_image(img_frog_3, 100)
-img_a_traiter = img_frog_1
+img_a_traiter = img_apple_1
 img_added = addition_2_images(img_apple_1, img_addition)
 img_soustraction = soustraction_2_images(img_apple_1, img_addition)
 print(img_soustraction)
