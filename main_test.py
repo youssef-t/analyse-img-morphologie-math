@@ -46,12 +46,12 @@ if __name__ == '__main__':
     img_DC = mpimg.imread(chemin_img_DC)
     #show initial image
     plt.imshow(img_DC, cmap=plt.cm.gray)
-    plt.title("img_DC")
+    plt.title("Image to test 'seuil'")
     plt.show()
     # threshold test
     img_DC = seuil_image(img_DC, 100)
     plt.imshow(img_DC, cmap=plt.cm.gray)
-    plt.title("img_DC")
+    plt.title("'seuil' test'")
     plt.show()
 
     # Save image to be processed
