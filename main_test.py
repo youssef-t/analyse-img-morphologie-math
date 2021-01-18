@@ -32,15 +32,6 @@ if __name__ == '__main__':
         for j in range(0, 10):
             img2[i][j + 50] = 1
 
-    # Display generate picture
-    plt.imshow(img, cmap='gray')
-    plt.title("Generated picture")
-    plt.show()
-
-    # Record picture
-    # img_pieces = mpimg.imread("./resources/frog_binary3.gif")
-    # print("img_pieces.shape: '{}'".format(img_pieces.shape))
-
     #image to test "seuil"
     chemin_img_DC = "./resources/Fig1204(WashingtonDC ).tif"
     img_DC = mpimg.imread(chemin_img_DC)
@@ -51,8 +42,18 @@ if __name__ == '__main__':
     # threshold test
     img_DC = seuil_image(img_DC, 100)
     plt.imshow(img_DC, cmap=plt.cm.gray)
-    plt.title("'seuil' test'")
+    plt.title("'seuil' test")
     plt.show()
+
+    # Display generate picture
+    plt.imshow(img, cmap='gray')
+    plt.title("Generated picture")
+    plt.show()
+
+    # Record picture
+    # img_pieces = mpimg.imread("./resources/frog_binary3.gif")
+    # print("img_pieces.shape: '{}'".format(img_pieces.shape))
+
 
     # Save image to be processed
     img_a_traiter = img
