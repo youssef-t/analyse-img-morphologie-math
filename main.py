@@ -1,5 +1,6 @@
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import cv2
 
 from functions import *
 
@@ -23,6 +24,7 @@ print("img_DC.shape: '{}'".format(img_DC.shape))
 # threshold test
 img_DC = seuil_image(img_DC, 100)
 plt.imshow(img_DC, cmap=plt.cm.gray)
+plt.title("img_DC")
 plt.show()
 print("img_DC: '{}'".format(img_DC))
 
@@ -36,17 +38,20 @@ for i in range(len(img_apple_1)):
     img_addition[i][33] = 1
 
 ### Call defined functions ###
+# Constants
 img_apple_1 = seuil_image(img_apple_1, 100)
 img_a_traiter = img_apple_1
 
 # img_added
 img_added = addition_2_images(img_apple_1, img_addition)
 plt.imshow(img_added, cmap=plt.cm.gray)
+plt.title("img_added")
 plt.show()
 
 # img_soustraction
 img_soustraction = soustraction_2_images(img_apple_1, img_addition)
 plt.imshow(img_soustraction, cmap=plt.cm.gray)
+plt.title("img_soustraction")
 plt.show()
 print(img_soustraction)
 
@@ -58,41 +63,49 @@ print(f'img_addition[100][31]: {img_addition[100][31]}')
 # img_erodee
 img_erodee = erosion_image_binaire(img_a_traiter)
 plt.imshow(img_erodee, cmap=plt.cm.gray)
+plt.title("img_erodee")
 plt.show()
 
 # img_dilatee
 img_dilatee = dilatation_image_binaire(img_a_traiter)
 plt.imshow(img_dilatee, cmap=plt.cm.gray)
+plt.title("img_dilatee")
 plt.show()
 
 # img_ouverture
 img_ouverture = ouverture_img(img_a_traiter)
 plt.imshow(img_ouverture, cmap=plt.cm.gray)
+plt.title("img_ouverture")
 plt.show()
 
 # fermeture_img
 img_fermeture = fermeture_img(img_a_traiter)
 plt.imshow(img_fermeture, cmap=plt.cm.gray)
+plt.title("img_fermeture")
 plt.show()
 
 # img_amincissement
 img_amincissement = amincissement_img(img_a_traiter)
 plt.imshow(img_amincissement, cmap=plt.cm.gray)
+plt.title("img_amincissement")
 plt.show()
 
 # img_epaississement
 img_epaississement = epaississement_img(img_a_traiter)
 plt.imshow(img_epaississement, cmap=plt.cm.gray)
+plt.title("img_epaississement")
 plt.show()
 
 # img_squelette_lantuejoul
 img_squelette_lantuejoul = squelette_lantuejoul(img_a_traiter, 20)
 plt.imshow(img_squelette_lantuejoul, cmap=plt.cm.gray)
+plt.title("img_squelette_lantuejoul")
 plt.show()
 
 # img_squelette_amincissement_homotopique
 img_squelette_amincissement_homotopique = squelette_amincissement_homotopique(img_a_traiter)
 plt.imshow(img_squelette_amincissement_homotopique, cmap=plt.cm.gray)
+plt.title("img_squelette_amincissement_homotopique")
 plt.show()
 
 # Output Images
