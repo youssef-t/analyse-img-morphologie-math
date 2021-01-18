@@ -262,9 +262,9 @@ def squelette_amincissement_homotopique(img):
     img_squelette_amincissement_homotopique_post = np.array(img, dtype=int)
     img_squelette_amincissement_homotopique_pre = np.array(img, dtype=int)
     # la valeur 2 correspond à une valeur quelconque
-    element_structurant = [[2, 0, 2],
-                           [1, 1, 0],
-                           [1, 1, 2]]
+    element_structurant = [[0, 0, 0],
+                           [2, 1, 2],
+                           [1, 1, 1]]
 
     # calculer le squelette jusqu'à l'idempotance
     # la boucle "do...while(condition)" n'existe pas en Python
