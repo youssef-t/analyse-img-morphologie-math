@@ -262,14 +262,15 @@ def squelette_amincissement_homotopique(img):
     img_squelette_amincissement_homotopique_post = np.array(img, dtype=int)
     img_squelette_amincissement_homotopique_pre = np.array(img, dtype=int)
     # la valeur 2 correspond à une valeur quelconque
-    element_structurant = [[2, 0, 0],
+    element_structurant = [[2, 0, 2],
                            [1, 1, 0],
-                           [2, 1, 2]]
+                           [1, 1, 2]]
 
     # calculer le squelette jusqu'à l'idempotance
     # la boucle "do...while(condition)" n'existe pas en Python
     # on utilise alors la syntaxe suivante: while True ... if(condition): break
     compteur = 0
+    compteur_similitude = 0
     while True:
         img_squelette_amincissement_homotopique_post = amincissement_img(img_squelette_amincissement_homotopique_post,
                                                                          element_structurant)
@@ -278,8 +279,11 @@ def squelette_amincissement_homotopique(img):
         print(f'Amincissement homotopique - boucle: {compteur}')
 
         # vérifier l'idempotance
-        if (img_squelette_amincissement_homotopique_pre == img_squelette_amincissement_homotopique_post).all() or \
-                compteur > 500:
+        if (img_squelette_amincissement_homotopique_pre == img_squelette_amincissement_homotopique_post).all():
+            compteur_similitude += 10
+        else:
+            compteur_similitude = 0
+        if compteur_similitude > 10 or compteur > 500:
             break
 
         # copie par valeur
