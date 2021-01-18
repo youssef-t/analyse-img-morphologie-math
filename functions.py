@@ -280,7 +280,7 @@ def squelette_amincissement_homotopique(img):
 
         # vérifier l'idempotance
         if (img_squelette_amincissement_homotopique_pre == img_squelette_amincissement_homotopique_post).all():
-            compteur_similitude += 10
+            compteur_similitude += 1
         else:
             compteur_similitude = 0
         if compteur_similitude > 10 or compteur > 500:

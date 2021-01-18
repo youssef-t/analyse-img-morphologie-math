@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-
+import matplotlib.image as mpimg
 from functions import *
 
 if __name__ == '__main__':
@@ -40,6 +40,19 @@ if __name__ == '__main__':
     # Record picture
     # img_pieces = mpimg.imread("./resources/frog_binary3.gif")
     # print("img_pieces.shape: '{}'".format(img_pieces.shape))
+
+    #image to test "seuil"
+    chemin_img_DC = "./resources/Fig1204(WashingtonDC ).tif"
+    img_DC = mpimg.imread(chemin_img_DC)
+    #show initial image
+    plt.imshow(img_DC, cmap=plt.cm.gray)
+    plt.title("img_DC")
+    plt.show()
+    # threshold test
+    img_DC = seuil_image(img_DC, 100)
+    plt.imshow(img_DC, cmap=plt.cm.gray)
+    plt.title("img_DC")
+    plt.show()
 
     # Save image to be processed
     img_a_traiter = img
